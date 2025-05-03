@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .active-tab {
+            background-color: #2563EB; /* Tailwind's bg-blue-600 */
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div class="flex justify-center mb-4">
+            <button id="doctorBtn" class="px-4 py-2 text-sm font-medium border rounded-l active-tab">Doctor</button>
+            <button id="patientBtn" class="px-4 py-2 text-sm font-medium border rounded-r">Patient</button>
+        </div>
+
+        <!-- Doctor Login Form -->
+        <form id="doctorForm" method="post" action="{% url 'doctor_login' %}">
+            {% csrf_token %}
+            <h2 class="text-xl font-bold text-center mb-4">Doctor Login</h2>
+
+            <!-- Display error message for Doctor Login -->
+            {% if error_message_doctor %}
+                <p class="text-red-500 text-sm text-center mb-4">{{ error_message_doctor }}</p>
+            {% endif %}
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Email</label>
+                <input type="email" name="username" required class="w-full mt-1 p-2 border rounded">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Password</label>
+                <input type="password" name="password" required class="w-full mt-1 p-2 border rounded">
+            </div>
+            
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+            <p class="mt-2 text-center text-sm">
+                Not registered? <a href="{% url 'doctor_register' %}" class="text-blue-500">Register here</a>
+            </p>
+        </form>
+
+        <!-- Patient Login Form (Initially Hidden) -->
+        <form id="patientForm" method="post" action="{% url 'patient_login' %}" class="hidden">
+            {% csrf_token %}
+            <h2 class="text-xl font-bold text-center mb-4">Patient Login</h2>
+
+            <!-- Display error message for Patient Login -->
+            {% if error_message_patient %}
+                <p class="text-red-500 text-sm text-center mb-4">{{ error_message_patient }}</p>
+            {% endif %}
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Patient ID</label>
+                <input type="text" name="patient_id" value="{{ patient_id|default:'' }}" required class="w-full mt-1 p-2 border rounded">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Password</label>
+                <input type="password" name="password" {% if show_default_password %} value="patient@123" {% endif %} required class="w-full mt-1 p-2 border rounded">
+            </div>
+
+            <p class="text-sm text-green-600 mb-2"><b>Default password:</b> patient@123</p>
+            
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+            <br>
+            <p class="mt-4 text-center text-sm">
+                <a href="{% url 'patient_change_password' %}" class="text-blue-500">Change your password</a>
+            </p>
+        </form>
+
+    </div>
+
+    <script>
+        const doctorBtn = document.getElementById('doctorBtn');
+        const patientBtn = document.getElementById('patientBtn');
+        const doctorForm = document.getElementById('doctorForm');
+        const patientForm = document.getElementById('patientForm');
+        // Flag from Django context to check if there was a patient login error
+        const showPatientForm = "{{ error_message_patient|default:'' }}".length > 0;
+
+        // Switch to Doctor Login Form
+        doctorBtn.addEventListener('click', () => {
+            doctorForm.classList.remove('hidden');
+            patientForm.classList.add('hidden');
+            doctorBtn.classList.add('active-tab');
+            patientBtn.classList.remove('active-tab');
+        });
+
+        // Switch to Patient Login Form
+        patientBtn.addEventListener('click', () => {
+            patientForm.classList.remove('hidden');
+            doctorForm.classList.add('hidden');
+            patientBtn.classList.add('active-tab');
+            doctorBtn.classList.remove('active-tab');
+        });
+
+        // If an error occurs in the patient form, make sure it stays visible
+        if (showPatientForm) {
+            patientForm.classList.remove('hidden');
+            doctorForm.classList.add('hidden');
+            patientBtn.classList.add('active-tab');
+            doctorBtn.classList.remove('active-tab');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Welcome Doctor {{ doctor}}</h2>
+
+    <h4>Your Patients</h4>
+    <ul class="list-group mb-4">
+        {% for patient in patients %}
+        <li class="list-group-item">
+            <a href="{% url 'doctor_view_patient_dashboard' patient.patient_id %}">
+                {{ patient.user.first_name }} (Patient ID: {{ patient.patient_id }})
+            </a>
+        </li>
+        
+        {% empty %}
+            <li class="list-group-item text-muted">No patients added yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Add a New Patient</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success mt-2">Add Patient</button>
+    </form>
+</div>
+{% endblock %}

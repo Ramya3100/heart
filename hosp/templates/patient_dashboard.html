@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow border-0 mx-auto" style="max-width: 640px;">
+        <div class="card-body text-center">
+            <h2 class="text-primary mb-4" style="font-weight: 600;">Welcome, {{ patient.user.first_name }}</h2>
+
+            <p class="text-muted fs-5 animate-fade" style="animation-delay: 0.5s;">
+                This website allows you to record your heartbeat and detect possible heart diseases using advanced AI technology.
+                Click the button below to begin your health check.
+            </p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-lg mt-4 px-5 py-3" type="submit">
+                    <i class="bi bi-heart-pulse-fill me-2"></i>Start Recording
+                </button>
+            </form>
+
+            <!-- Diagnosis Results Section -->
+            {% if diagnosis %}
+                <h1 class="mt-5">Diagnosis Results</h1>
+                <div class="diagnosis">
+                    {% for result in diagnosis %}
+                        <div class="result">
+                            <h2>File: {{ result.file }}</h2>
+                            <p class="disease-name">Disease Name: <strong>{{ result.disease_name }}</strong></p>
+                            <p class="remarks">Remarks: <strong>{{ result.remarks }}</strong></p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Optionally add any JavaScript if required for recording logic
+</script>
+
+<style>
+    /* Animation */
+    .animate-fade {
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 1s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Custom font override if needed */
+    body, h2, p, button {
+        font-family: 'Inter', sans-serif;
+    }
+</style>
+{% endblock %}

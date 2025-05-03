@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --sidebar-width: 240px;
+            --navbar-height: 64px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            padding-top: var(--navbar-height);
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            height: var(--navbar-height);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Brand Styling */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-symbol {
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-symbol span {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        /* Button Adjustments */
+        .navbar-nav .btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+            border-width: 1.5px;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            height: calc(100vh - var(--navbar-height));
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar .nav-link {
+            color: #64748b;
+            padding: 0.5rem 1.25rem;
+            margin: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: calc(100vh - var(--navbar-height));
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -var(--sidebar-width);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            .brand-symbol {
+                width: 22px;
+                height: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">
+        <div class="brand-symbol">
+            <span>+</span>
+        </div>
+        HealthCare
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-center">
+        {% if user.is_authenticated %}
+          {% if user.groups.all.0.name == "Doctor" %}
+            <li class="nav-item">
+                <span class="nav-link text-white-50">Welcome, {{ user }}</span>
+            </li>
+          {% endif %}
+            <li class="nav-item">
+                <a class="btn btn-outline-light" href="{% url 'logout' %}">Logout</a>
+            </li>
+        {% else %}
+            <li class="nav-item me-2">
+                <a class="btn btn-outline-light" href="{% url 'doctor_login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-light" href="{% url 'doctor_register' %}">Register</a>
+            </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar for Patients -->
+{% if is_patient_view %}
+    <div class="sidebar">
+        <div class="px-3 mb-4">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'patient_dashboard' %}">Dashboard</a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" href="#">Add Record</a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{#}">Old Records</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Main Content -->
+<div class="main-content">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
